@@ -105,8 +105,8 @@ ggplot(pca_data,aes(x =  PC1, y = PC2,size = body_length, fill = predict_prob, s
   facet_wrap(~age_plot)+
   scale_shape_manual(values = c(24,24,22,22),name = "Observed")+
   theme_bw()+
-  xlab(label = 'PC1: 37.4% explained variance (2nd instar)')+
-  ylab(label = 'PC2: 12% explained variance (2nd instar)')+
+  xlab(label = 'PC1: 37.4% explained variance (2nd instar)')+ # This number is calculated in a separated analysis.
+  ylab(label = 'PC2: 12% explained variance (2nd instar)')+ # This number is calculated in a separated analysis.
   theme(legend.position = "none",strip.text = element_text(size = 6,margin = margin(.02,0,.02,0, "in")),
         plot.margin = unit(c(0.01,0.01, 0,0),'in'),
         panel.spacing = unit(.5, "lines"),
