@@ -8,7 +8,7 @@ test_age = '3rd'
 # This step reads in the gene expression matrix and sample information into a list, exp_data. See shared_functions.R for detail.
 exp_data = quick_subset(c(train_age,test_age),all.sampletable = sampleTable.used,deg_test = F,ab.type = 'count.upper')
 
-# Identify caste DEGs as features (candidate genes).
+# Step 0: Identificaton of caste DEGs at 3rd instar as features (candidate genes). Note: One can use all genes as features, but the signal to noise ratio will be very low.
 exp_deg = quick_subset(test_age,all.sampletable = sampleTable.used,deg_test = T,deg_contrast = 'caste',LRT = F)
 exp_deg$res = results(exp_deg$dds,contrast = c('caste','Gyne','Worker'),alpha = 5e-2,lfcThreshold = 0)
 summary(exp_deg$res)
@@ -65,37 +65,37 @@ reverse_pca.exp = function(train_data.exp, test_data.exp, train_age, test_age, s
 }
 ### End of code.
 
-# This step (1) construct PCs from transcriptomes of 2nd instar larvae and 
-# (2) projects the transcriptomes of 3rd instar larvae on the constructed PCs.
+# Step 1: Construction of PCs from transcriptomes of 2nd instar larvae and 
+# Step 2: Projection of the 3rd instar transcriptomes onto the constructed PCs.
 pca_data = reverse_pca.exp(exp_data$abundance[candidate_genes,train_data],
                            exp_data$abundance[candidate_genes,test_data],
                            train_age,test_age,
                            sample.info = exp_data$sampleInfo,
                            n_gene = length(candidate_genes))
 
-# This step visually examines the PC value similarity between 2nd instar and 3rd instar larvae. 
+# Step 3.a: Visually examine the PC value similarity between 2nd instar and 3rd instar larvae. 
 ggplot(pca_data,aes(x = PC1, y = PC2,size = log(body_length), col = caste))+
   geom_point()+
   scale_size_continuous(range = c(.5,3))+
   facet_wrap(~age)+
   theme_bw()
 
-# This step stastitically identifies PCs that associated with caste identities in 3rd instar larvae.  
+# Step 3.b: Stastitically identify PCs that associated with caste identities in 3rd instar larvae.  
 summary(glm(PC1 ~ caste + log(body_length), data = droplevels(pca_data[which(pca_data$age %in% test_age),])))
 
-# 
-pca.3rd =lda(caste ~ PC1 + PC2 , data=  droplevels(pca_data[which(pca_data$age %in% test_age),]),probability = TRUE)
+# Step 3.c: Train a caste prediction model (with 3rd instar transcriptomic data), based on the identified caste PCs on Step 3.b.
+pca.3rd =lda(caste ~ PC1 + PC2 , data =  droplevels(pca_data[which(pca_data$age %in% test_age),]),probability = TRUE)
+
+# Step 4: Prediction of caste identities among 2nd instar larvae.
 pca_data$predict_caste = predict(pca.3rd,pca_data)$class
 pca_data$predict_prob = predict(pca.3rd,pca_data)$posterior[,'Gyne']
 table(pca_data$predict_caste,pca_data$caste,pca_data$age)
-quick_pca(exp_data$abundance[candidate_genes,train_data],tmp.sampletable = exp_data$sampleInfo)
+
 pca_data$age_plot = pca_data$age
 levels(pca_data$age_plot) = c("2nd instar",'3rd instar')
 pca_data$caste = factor(pca_data$caste,levels = c("Gyne",'Worker'))
 
-pca_data$predict_prob[which(pca_data$caste %in% c("Male",'Gyne') & pca_data$age %in% '3rd')] = .5
-pca_data$predict_prob[which(pca_data$caste %in% c("Worker") & pca_data$age %in% '3rd')] = .5
-pca_data$body_length = pca_data$body_length/10
+# Visualization of the prediction result.
 ggplot(pca_data,aes(x =  PC1, y = PC2,size = body_length, fill = predict_prob, shape= paste(caste,age),col = paste(age,caste)),colour = NULL)+
   geom_point(stroke = .3)+
   scale_size_binned(range = c(0.3,2),n.breaks = 3,name = 'Body length')+
@@ -111,4 +111,3 @@ ggplot(pca_data,aes(x =  PC1, y = PC2,size = body_length, fill = predict_prob, s
         plot.margin = unit(c(0.01,0.01, 0,0),'in'),
         panel.spacing = unit(.5, "lines"),
         axis.title = element_text(size = 6),axis.text = element_text(size = 6,face = 'plain'))
-ggsave(filename = 'Figure_raw/Figure2B.pdf',width = 3.58,height = 1.84,units = 'in')
