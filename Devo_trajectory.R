@@ -1,5 +1,5 @@
 # Construct the transcriptomic developmental trajectory of a target species.
-source('shared_function.R')
+source('shared_functions.R')
 # abundance.quantile is the gene expression matrix of a target species (e.g., M. pharaonis) across developmental stages. Rows are genes, columns are samples.
 # sampleInfo.Table is the sample information of a target species.
 
