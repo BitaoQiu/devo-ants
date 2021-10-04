@@ -15,20 +15,10 @@ library(gage)
 library(e1071)
 library(sva)
 library("dplyr")
-#ortholog_ant = read.csv('~/Documents/KU_data_analysis/evo_devo/Salmon/NCBI_annotation/Aech_2_Mpha.poff.tsv',sep = '\t')
-#ortholog_ant.filter = ortholog_ant[which(ortholog_ant$X..Species == '2' & ortholog_ant$Genes== '2'),]
-#go.dm=go.gsets(species="Fly")
-#go.bp=go.dm$go.sets[go.dm$go.subs$BP]
-#go.mf=go.dm$go.sets[go.dm$go.subs$MF]
-#names(go.bp)
-#go.all = c(go.bp,go.mf)
-#kg.dm=kegg.gsets("dme",id.type = 'entrez')
-#kegg.gs=kg.dm$kg.sets[kg.dm$sigmet.idx]
-#save(go.bp,go.mf,go.all,kegg.gs, file = '~/Documents//KU_data_analysis/evo_devo/Salmon/Mpha_NCBI_ver2/common/GO.Rdata')
 
-load('~/Documents//KU_data_analysis/evo_devo/Salmon/Mpha_NCBI_ver2/common/GO.Rdata')
-load('~/Documents//KU_data_analysis/evo_devo/Salmon/Dmel_NCBI/common/Dmel_tissues.Rdata')
-source('~/Documents//KU_data_analysis/evo_devo/Salmon/Mpha_NCBI_ver2/common/prepare_dmel_tissues_adult.R')
+#load('~/Documents//KU_data_analysis/evo_devo/Salmon/Mpha_NCBI_ver2/common/GO.Rdata') 
+#load('~/Documents//KU_data_analysis/evo_devo/Salmon/Dmel_NCBI/common/Dmel_tissues.Rdata')
+#source('~/Documents//KU_data_analysis/evo_devo/Salmon/Mpha_NCBI_ver2/common/prepare_dmel_tissues_adult.R')
 caste_col = rev(colorRampPalette(brewer.pal(n = 3,name = "Set1"))(3))
 caste_col[1] = 'grey'
 caste_aech_col = rev(colorRampPalette(brewer.pal(n = 5,name = "Set1"))(5))
@@ -754,9 +744,6 @@ glm_contrast = function(geneID, exp_data, subsamples, model = 'exp ~ age*(caste_
     error = function(e) return(rep(0,6)))
 }
 
-#test = glm_contrast('gene_1725',exp_data = exp_data, subsamples = sub_samples_aech_coef_prepupae,
-#                    model = 'exp ~ (caste_2 + log(body_length)) + library_2', co_var = c('library_2C','library_2B'),body_length = 'body_length',abundance = 'abundance.filtered')
-
 glm_contrast_predict = function(geneID, exp_data,subsamples, model = 'exp ~ age_2*(caste_2 + log(body_length)) + library_2', check_age = age_levels[c(22:28)],
                                 abundance = 'abundance'){
   tmp_data = data.frame(exp = exp_data[[abundance]][geneID,subsamples])
@@ -812,29 +799,13 @@ sim_GO = function(x, by = 'pvalue', cutoff = .8,decreasing = F,Cluster = 'Cluste
     for(j in rownames(go_sim)){
       go_sim.cor[i,j] = sum(go_sim[i,]*go_sim[j,])/sum(sapply(go_sim[i,] + go_sim[j,],min,1))}
   }
- # return(go_sim.cor)
-#}
-  # GO similarity based on correlation.
-  # go_sim.cor = cor(t(go_sim),method = 'p') 
-  # return(go_sim.cor)
-#}
-#go_sim.cor = gyne_go
-#cutoff = .75
   go_clusters = cutree(hclust(as.dist(1 - go_sim.cor),method = 'average'),h = cutoff) # Select the right cut-off
   plot(hclust(as.dist(1 - go_sim.cor)))
   abline(h = cutoff)
   x.filter$GO_cluster = go_clusters[match(x.filter$Cluster_ID,names(go_clusters))] 
-#  return(x.filter)
-#}
-
-
   # Within each cluster, retain one term that with the lowest qvalue.
   go_filtered = tapply(x.filter$Cluster_ID,INDEX = x.filter$GO_cluster,function(x){ 
     tmp = x.filter[which(x.filter$Cluster_ID %in% x),]
     return(tmp$Cluster_ID[order(tmp[,by],decreasing = decreasing)][1])})
   return(go_filtered)
 }
-
-
-
-#glm_contrast('gene_0',exp_data, subsamples = which(exp_data$sampleInfo$age %in% c('Imago','Pre.Pupa')),model = 'exp ~ age*(caste_2 + log(body_size)) + library_2')
