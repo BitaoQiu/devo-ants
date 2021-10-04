@@ -1,11 +1,7 @@
 # Construct the transcriptomic developmental trajectory of a target species.
-
-library(tidyverse)
-library("igraph")
-library(ggraph)
-
-# abundance.quantile is the gene expression matrix of target species (e.g., M. pharaonis) across developmental stages. Rows are genes, columns are samples.
-# sampleInfo.Table is the sample information of target species.
+source('shared_function.R')
+# abundance.quantile is the gene expression matrix of a target species (e.g., M. pharaonis) across developmental stages. Rows are genes, columns are samples.
+# sampleInfo.Table is the sample information of a target species.
 
 devo_matrix = cor(abundance.quantile,method = 's')
 devo_matrix[which(devo_matrix < 0.81)] = 0
