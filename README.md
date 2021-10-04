@@ -7,7 +7,7 @@ Codes for _Towards a developmental biology of superorganisms: reconstructing the
 * Backward Progressive Algorithm (BPA).
 * Quantification of caste developmental potential.
 * Quantification of canalization score at gene level.
-* Quantification beteween-species transcriptomic similarity.
+* Quantification between-species transcriptomic similarity.
 * Detection of differentially expressed genes that independent of body size difference.
 * Threshold regression model (detecting the body-size threshold that changes the expression pattern).
 * Correction for batch effect.
