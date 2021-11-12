@@ -1,11 +1,12 @@
 # Construct the transcriptomic developmental trajectory of a target species.
 source('shared_functions.R')
-# abundance.quantile is the gene expression matrix of a target species (e.g., M. pharaonis) across developmental stages. Rows are genes, columns are samples.
+# abundance.quantile is the (quantile normalized) gene expression matrix (log2 transformed) of a target species (e.g., M. pharaonis) in all developmental stages. 
+# Rows are genes, columns are samples.
 # sampleInfo.Table is the sample information of a target species.
 
 devo_matrix = cor(abundance.quantile,method = 's')
-devo_matrix[which(devo_matrix < 0.81)] = 0
-filter_sample = which(apply(devo_matrix,1,function(x) sum(x > .9)) < 5)
+devo_matrix[which(devo_matrix < 0.81)] = 0 # Two samples are connected if their transcriptomic correlation coefficient > 0.81.
+filter_sample = which(apply(devo_matrix,1,function(x) sum(x > .9)) < 5) # Remove outlier samples.
 devo_matrix = devo_matrix[-filter_sample, -filter_sample]
 
 exp_data_info = sampleInfo.Table 
@@ -13,7 +14,7 @@ exp_data_info = exp_data_info[-filter_sample,]
 exp_data_info = droplevels(exp_data_info)
 exp_data_info$caste = factor(exp_data_info$caste,levels = c('Gyne','Worker','Unknown'))
 
-devo_net = graph_from_adjacency_matrix(adjmatrix = devo_matrix, weighted = T,mode = 'undirected',diag = F)
+devo_net = graph_from_adjacency_matrix(adjmatrix = devo_matrix, weighted = T,mode = 'undirected',diag = F) # Transform correlation coefficient matrix into network.
 V(devo_net)$label <- NA
 V(devo_net)$Age = exp_data_info$age
 V(devo_net)$Caste = exp_data_info$caste
