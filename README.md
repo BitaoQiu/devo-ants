@@ -3,7 +3,7 @@ Codes for _Towards a developmental biology of superorganisms: reconstructing the
 
 **Outline:**
 
-* Construction of developmental trajectory network.
+* Construction of developmental trajectory network. (Devo_trajectory.R)
 * Backward Progressive Algorithm (BPA).
 * Quantification of caste developmental potential.
 * Quantification of canalization score at gene level.
