@@ -1,6 +1,6 @@
 # devo-ants
 Key codes for _Towards a developmental biology of superorganisms: reconstructing the canalized trajectories of caste differentiation in ants_ 
-> Please contact bitao.qiu.88 [at] gmail <dot> com if any question.
+> Please contact bitao.qiu.88 [at] gmail \<dot\> com if any question.
 
 **Outline:**
 
