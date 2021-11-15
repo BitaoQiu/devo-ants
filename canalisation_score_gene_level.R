@@ -59,34 +59,27 @@ cal_score = function(exp_diff, var_sum,pseudo_count = .1){
 }
 
 canalized_score = data.frame(row.names = rownames(exp_data.full$abundance.filtered))
-# We first calculate the ratio of between-caste expression difference and within-caste expression variation in each stage.
+# We first calculate the ratio of between-caste expression difference and within-caste expression variation in each stage (between-caste deviation).
+# For 2nd and 3rd instar larvae, we account for the variation due to body length difference.
 for(i in age_levels[c(22:27)]){
   if (i %in% c('2nd','3rd')){
-  # For 2nd and 3rd instar larvae, we account for the variation due to body length difference.
-    canalized_score[,i] = future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% i)],
-                                       1, FUN = function(x) cal_canalized_length(x,exp_data.full$sampleInfo))}
+    canalized_score[,i] = future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% i)],1, FUN = function(x) cal_canalized_length(x,exp_data.full$sampleInfo))}
   else{
-    canalized_score[,i] = future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% i)], 
-                                       1, FUN = function(x) cal_canalized(x,exp_data.full$sampleInfo))}
+    canalized_score[,i] = future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% i)],1, FUN = function(x) cal_canalized(x,exp_data.full$sampleInfo))}                                     
 }
 
-
-
+# Because of the huge variation in imagos (due to the difficulty of tissue lysis during RNA extraction), the between-caste deviation in imagos are calculated by combining the 3rd quantile expression difference in imagos and the variation in old pupae.
 c.score_old_pupa = t(future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% "Pupa.Old")], 
                                    1, FUN = function(x) cal_canalized_score(x,exp_data.full$sampleInfo)))
 c.score_imago = t(future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% "Imago")], 
                                 1, FUN = function(x) cal_canalized_score(x,exp_data.full$sampleInfo)))
 
-# Because of the huge variation in imagos (tissue lysis), the ratio in imagos are calculated by 
-# combining the 3rd quantile expression difference in imagos and the variation in old pupae.
-
 canalized_score$Imago = future_sapply(rownames(canalized_score),FUN = function(x){cal_score(c.score_imago[x,2],c.score_old_pupa[x,1])})
 
-canalized_score[apply(canalized_score[,c(1:6)],1,anyNA),]
-
 canalized_score[,c(1:6)][is.na(canalized_score[,c(1:6)])] = 0
-examined_age = c(1:6) 
+
 # We then quantify the trend of caste-expression-difference ratio across developmental stages.
+examined_age = c(1:6) 
 canalized_score[,c('pvalue','cor')] = t(apply(canalized_score[,examined_age],1,FUN = function(x){
   if(anyNA(x)){return(c(NA,NA))}
   else{
@@ -95,10 +88,10 @@ canalized_score[,c('pvalue','cor')] = t(apply(canalized_score[,examined_age],1,F
   }))
 
 canalized_score$same_direction = ((canalized_score$Imago*canalized_score$Pupa.Old > 0))
-canalized_score$c.score = -log10(canalized_score$pvalue)
+canalized_score$c.trend = -log10(canalized_score$pvalue)
 
-# Finally, calculation of canalization score by combining (1) the trend of increasing caste-difference and (2) the caste-expression difference at the end stage:
-canalized_score$combined = canalized_score$c.score*canalized_score$Pupa.Old # We use caste-expression difference in old pupae because of the poor sample quality in imagos.
+# Finally, calculate the canalization score by combining (1) the trend of increasing between-caste deviation and (2) the caste-expression difference at the end stage:
+canalized_score$combined = canalized_score$c.trend*canalized_score$Pupa.Old # We use caste-expression difference in old pupae because of the poor sample quality in imagos.
 canalized_score$combined[which(canalized_score$same_direction == F)] = 0
 canalized_score = canalized_score[order(abs(canalized_score$combined),decreasing = T),]
 
