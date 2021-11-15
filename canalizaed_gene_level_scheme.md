@@ -1,6 +1,6 @@
 1. Between-caste deviation<sub>age</sub> = <img src="https://latex.codecogs.com/png.image?\dpi{110}&space;\inline&space;\frac{Mean_{gyne,age}&space;-&space;Mean_{worker,age}}{\sqrt{Var_{gyne,age}&space;&plus;&space;Var_{worker,age}}}" title="\inline \frac{Mean_{gyne,age} - Mean_{worker,age}}{\sqrt{Var_{gyne,age} + Var_{worker,age}}}" />
 
->Gene with high between-caste expression difference or with low within-caste variation are with high Between-caste deviation.
+>Gene with high between-caste expression difference or with low within-caste variation are with high between-caste deviation.
 
 2. C.trend = -log(Spearman.Cor(|Between-caste deviation<sub>age</sub>|, age)$p.value) # Trend of between-caste deviation across ages.
 
