@@ -1,4 +1,4 @@
-# Detect canalizatin related genes.
+# Detect canalized genes.
 
 source('shared_functions.R')
 library(plyr)
