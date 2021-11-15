@@ -97,7 +97,7 @@ canalized_score[,c('pvalue','cor')] = t(apply(canalized_score[,examined_age],1,F
 canalized_score$same_direction = ((canalized_score$Imago*canalized_score$Pupa.Old > 0))
 canalized_score$c.score = -log10(canalized_score$pvalue)
 
-# Calculation of canalization score by combining (1) the trend of increasing caste-difference and (2) the caste-expression difference at the end stage:
+# Finally, calculation of canalization score by combining (1) the trend of increasing caste-difference and (2) the caste-expression difference at the end stage:
 canalized_score$combined = canalized_score$c.score*canalized_score$Pupa.Old # We use caste-expression difference in old pupae because of the poor sample quality in imagos.
 canalized_score$combined[which(canalized_score$same_direction == F)] = 0
 canalized_score = canalized_score[order(abs(canalized_score$combined),decreasing = T),]
