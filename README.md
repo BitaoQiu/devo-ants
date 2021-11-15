@@ -1,5 +1,6 @@
 # devo-ants
-Codes for _Towards a developmental biology of superorganisms: reconstructing the canalized trajectories of caste differentiation in ants_ 
+Key codes for _Towards a developmental biology of superorganisms: reconstructing the canalized trajectories of caste differentiation in ants_ 
+> Feel free to contact in case of unclear.
 
 **Outline:**
 
