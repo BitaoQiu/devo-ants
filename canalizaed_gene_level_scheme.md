@@ -6,7 +6,7 @@
 
 >Quantify the trend of the absolute value of between-caste deviation across developmental stages. Genes with increasing divergence are with high C.trend.
 
->Set C.trend = 0 if Between-caste deviation<sub>pupa.old</sub> * Between-caste deviation<sub>pupa.imago</sub> < 0, so that genes with opposite expression bias in late stages are with C.trend = 0.
+>Set C.trend = 0 if Between-caste deviation<sub>pupa.old</sub> * Between-caste deviation<sub>imago</sub> < 0, so that genes with opposite expression bias in late stages are with C.trend = 0.
 
 3. Canalization score = Between-caste deviation<sub>pupa.old</sub> * C.trend
 
