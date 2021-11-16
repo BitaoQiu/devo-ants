@@ -1,4 +1,4 @@
-# Identify the size threshold for each candidate genes within the metamorphosis gene module.
+# Identify the body size threshold for candidate genes within the metamorphosis gene module.
 source('shared_functions.R'))
 library(chngpt)
 library(lmtest)
@@ -13,21 +13,21 @@ exp_data$abundance.filtered = betweenLaneNormalization(exp_data$abundance.filter
 subset_samples = which(exp_data$sampleInfo$age %in% c('2nd','3rd'))
 
 # Using LOC105832848 (E93) as an example:
-tmp_data = data.frame(exp = exp_data$abundance.filtered['LOC105832848',subset_samples],
+gene_data = data.frame(exp = exp_data$abundance.filtered['LOC105832848',subset_samples],
                       size = log(exp_data$sampleInfo[subset_samples,'body_length']),
                       caste = exp_data$sampleInfo[subset_samples,'caste'])
 
 # We calculate the threshold for gyne and worker samples separately.
-fit.gyne = chngptm(formula.1 = exp ~ 1, formula.2 = ~ size, data = tmp_data[which(tmp_data$caste %in% 'Gyne'),], type="M11", family="gaussian")
-fit.worker = chngptm(formula.1 = exp ~ 1, formula.2 = ~ size, data = tmp_data[which(tmp_data$caste %in% 'Worker'),], type="M11", family="gaussian")
+fit.gyne = chngptm(formula.1 = exp ~ 1, formula.2 = ~ size, data = gene_data[which(gene_data$caste %in% 'Gyne'),], type="M11", family="gaussian")
+fit.worker = chngptm(formula.1 = exp ~ 1, formula.2 = ~ size, data = gene_data[which(gene_data$caste %in% 'Worker'),], type="M11", family="gaussian")
 
 summary(fit.gyne)
 summary(fit.worker)
 
 # Test the significance.
 # Null model (without threshold expression pattern)
-fit.gyne.0=lm(exp ~ size, tmp_data[which(tmp_data$caste %in% 'Gyne'),]) 
-fit.worker.0=lm(exp ~ size, tmp_data[which(tmp_data$caste %in% 'worker'),]) 
+fit.gyne.0=lm(exp ~ size, gene_data[which(gene_data$caste %in% 'Gyne'),]) 
+fit.worker.0=lm(exp ~ size, gene_data[which(gene_data$caste %in% 'worker'),]) 
 
 lrtest(fit.gyne, fit.gyne.0)
 lrtest(fit.worker, fit.worker.0)
@@ -35,6 +35,7 @@ lrtest(fit.worker, fit.worker.0)
 # Illustration:
 plot_single_candidate_size('LOC105832848',exp_data, gene_info = mpha.info,abundance = 'abundance.filtered',method_f = 'loess')+
   facet_wrap(~life_stage,scales = 'free_x',nrow = 3)+
-  geom_vline(xintercept = c(2.28,3.13),linetype = c(2,2),col = c('blue','red'))+
+  geom_vline(xintercept = c(2.28,3.13),linetype = c(2,2),col = c('blue','red'))+ 
+  # 2.28 and 3.13 were extracted from summary(fit.gyne) and summary(fit.worker).
   scale_color_manual(values = c(brewer.pal(9, 'RdYlBu')[c(9,1)],'black'))
 
