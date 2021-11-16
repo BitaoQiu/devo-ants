@@ -36,6 +36,6 @@ lrtest(fit.worker, fit.worker.0)
 plot_single_candidate_size('LOC105832848',exp_data, gene_info = mpha.info,abundance = 'abundance.filtered',method_f = 'loess')+
   facet_wrap(~life_stage,scales = 'free_x',nrow = 3)+
   geom_vline(xintercept = c(2.28,3.13),linetype = c(2,2),col = c('blue','red'))+ 
-  # 2.28 and 3.13 were extracted from summary(fit.gyne) and summary(fit.worker).
+  # 2.28 and 3.13 were extracted from summary(fit.worker) and summary(fit.gyne).
   scale_color_manual(values = c(brewer.pal(9, 'RdYlBu')[c(9,1)],'black'))
 
