@@ -59,7 +59,7 @@ cal_score = function(exp_diff, var_sum,pseudo_count = .1){
 }
 
 canalized_score = data.frame(row.names = rownames(exp_data.full$abundance.filtered))
-# We first calculate the ratio of between-caste expression difference and within-caste expression variation in each stage (between-caste deviation).
+# We first calculate the ratio of between-caste expression difference and within-caste expression variation at each stage. We define this ratio as the between-caste divergence.
 # For 2nd and 3rd instar larvae, we account for the variation due to body length difference.
 for(i in age_levels[c(22:27)]){
   if (i %in% c('2nd','3rd')){
@@ -68,7 +68,7 @@ for(i in age_levels[c(22:27)]){
     canalized_score[,i] = future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% i)],1, FUN = function(x) cal_canalized(x,exp_data.full$sampleInfo))}                                     
 }
 
-# Because of the huge variation in imagos (due to the difficulty of tissue lysis during RNA extraction), the between-caste deviation in imagos are calculated by combining the 3rd quantile expression difference in imagos and the variation in old pupae.
+# Because of the huge variation in imagos (due to the difficulty of tissue lysis during RNA extraction), the between-caste divergence in imagos are calculated by combining the 3rd quantile expression difference in imagos and the variation in old pupae.
 c.score_old_pupa = t(future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% "Pupa.Old")], 
                                    1, FUN = function(x) cal_canalized_score(x,exp_data.full$sampleInfo)))
 c.score_imago = t(future_apply(exp_data.full$abundance.filtered[,which(exp_data.full$sampleInfo$age %in% "Imago")], 
@@ -78,7 +78,7 @@ canalized_score$Imago = future_sapply(rownames(canalized_score),FUN = function(x
 
 canalized_score[,c(1:6)][is.na(canalized_score[,c(1:6)])] = 0
 
-# We then quantify the trend of caste-expression-difference ratio across developmental stages.
+# We then quantify the trend of between-caste divergence across developmental stages.
 examined_age = c(1:6) 
 canalized_score[,c('pvalue','cor')] = t(apply(canalized_score[,examined_age],1,FUN = function(x){
   if(anyNA(x)){return(c(NA,NA))}
@@ -90,7 +90,7 @@ canalized_score[,c('pvalue','cor')] = t(apply(canalized_score[,examined_age],1,F
 canalized_score$same_direction = ((canalized_score$Imago*canalized_score$Pupa.Old > 0))
 canalized_score$c.trend = -log10(canalized_score$pvalue)
 
-# Finally, calculate the canalization score by combining (1) the trend of increasing between-caste deviation and (2) the caste-expression difference at the end stage:
+# Finally, calculate the canalization score by combining (1) the trend of increasing between-caste divergence and (2) the caste-expression difference at the end stage:
 canalized_score$combined = canalized_score$c.trend*canalized_score$Pupa.Old # We use caste-expression difference in old pupae because of the poor sample quality in imagos.
 canalized_score$combined[which(canalized_score$same_direction == F)] = 0
 canalized_score = canalized_score[order(abs(canalized_score$combined),decreasing = T),]
@@ -99,5 +99,5 @@ canalized_score$p.same = apply(canalized_score[,c(1:6)],1,FUN = function(x)wilco
 canalized_score[,c('blastp','gene.name','NCBI','dmel','coverage','bitScore','Evalue','ortholog',"Aech_Ortholog")] = 
   mpha.info[match(rownames(canalized_score),mpha.info$geneID),c('blastp','gene.name','NCBI','dmel','coverage','bitScore','Evalue','ortholog','aech_ortholog')]
 
-# Plotting one canalized gene as an example.
+# Plotting the top canalized gene as an example.
 plot_single_candidate('LOC105837931',exp_data.full, abundance = 'abundance.filtered')
