@@ -1,5 +1,5 @@
 # devo-ants
-Key scripts for _Towards a developmental biology of superorganisms: reconstructing the canalized trajectories of caste differentiation in ants_ 
+Key scripts for _Canalized gene expression during development mediates caste differentiation in ants_ 
 
 **Outline:**
 
