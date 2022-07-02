@@ -1,5 +1,4 @@
-# devo-ants
-Key scripts for _Canalized gene expression during development mediates caste differentiation in ants_ 
+# Canalized gene expression during development mediates caste differentiation in ants
 
 **Outline:**
 
