@@ -8,3 +8,5 @@
 * Quantification of canalization score at gene level: [script](canalisation_score_gene_level.R) and [a schematic view](canalizaed_gene_level_scheme.md).
 * Detection of differentially expressed genes that independent of body size difference: [script](deg_size_independent.R).
 * Threshold regression model (detect the body-size threshold that changes the expression pattern): [script](threshold_model.R). 
+
+In house genome annotation for A. echinatior can be found in [final_annotation.gff](final_annotation.gff.zip) and [Aech_GeneInfo](Aech_GeneInfo.csv).
